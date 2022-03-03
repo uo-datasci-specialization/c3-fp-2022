@@ -67,7 +67,7 @@ commit history to ensure all group members contributed roughly equally.
 The final project has multiple components that are due at different points throughout the term. These include the following:
 
 `r blogdown::shortcode_open("bootstrap-table", "table table-hover", .type = "html")`
-|  **Component** |**Due**  | **Points** | **Percentage of final grad**  |
+|  **Component** |**Due**  | **Points** | **Percentage of final grade**  |
 |  :---------------: | :------  |:--:|:--:|
 |  Groups finalized  | 04-04-22 | 0  | 0  |
 |  Outline           | 04-18-22 | 5  | 2.5|
@@ -134,7 +134,7 @@ should specifically identify:
 * Lingering questions (is there anything that gives you pause in terms of how
   your final project will address all the grading requirements)
 
-### Draft Data Preparation Script 
+### Draft Data Preparation Script
 
 **10 points, Due by midnight on May 16th**
 
@@ -145,7 +145,7 @@ progress and it is expected there will still be pieces you are working on. But
 the majority should be there. This script will be distributed to your peers 
 for feedback.
 
-### Peer Review 
+### Peer Review
 
 **15 points, Due by midnight on May 23rd**
 
@@ -173,7 +173,7 @@ comments that could be perceived as negative, and outside the scope of the
 code, will result in an immediate score of zero. Be constructive in your 
 feedback. Be kind. We are all learning.
 
-### Final product 
+### Final product
 
 **70 points: Due by midnight on June 6th**
 
