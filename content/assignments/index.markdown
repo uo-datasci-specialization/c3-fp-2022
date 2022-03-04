@@ -14,11 +14,11 @@ Each lab is worth 10 points and is scored on a best-honest-effort basis. Please 
 
 {{< bootstrap-table "table table-hover" >}}
 
-| Lab|Date Assigned |Date Due      |Topic                                          |
-|---:|:-------------|:-------------|:----------------------------------------------|
-|   1|Mon, April 04 |Mon, April 11 |Subsetting lists and base R `for()` loops      |
-|   2|Mon, April 11 |Mon, April 18 |Multiple models and API calls with **{purrr}** |
-|   3|Mon, May 09   |Mon, May 16   |Create and apply functions                     |
+| Lab|Date Assigned |Date Due      |Topic                                                 |
+|---:|:-------------|:-------------|:-----------------------------------------------------|
+|   1|Mon, April 04 |Mon, April 11 |[Subsetting lists and base R `for()` loops](../lab-1) |
+|   2|Mon, April 11 |Mon, April 18 |Multiple models and API calls with **{purrr}**        |
+|   3|Mon, May 09   |Mon, May 16   |Create and apply functions                            |
 
 {{< /bootstrap-table >}}
 
@@ -52,7 +52,7 @@ commit history to ensure all group members contributed roughly equally.
 The final project has multiple components that are due at different points throughout the term. These include the following:
 
 {{< bootstrap-table "table table-hover" >}}
-|  **Component** |**Due**  | **Points** | **Percentage of final grad**  |
+|  **Component** |**Due**  | **Points** | **Percentage of final grade**  |
 |  :---------------: | :------  |:--:|:--:|
 |  Groups finalized  | 04-04-22 | 0  | 0  |
 |  Outline           | 04-18-22 | 5  | 2.5|
@@ -119,7 +119,7 @@ should specifically identify:
 * Lingering questions (is there anything that gives you pause in terms of how
   your final project will address all the grading requirements)
 
-### Draft Data Preparation Script 
+### Draft Data Preparation Script
 
 **10 points, Due by midnight on May 16th**
 
@@ -130,7 +130,7 @@ progress and it is expected there will still be pieces you are working on. But
 the majority should be there. This script will be distributed to your peers 
 for feedback.
 
-### Peer Review 
+### Peer Review
 
 **15 points, Due by midnight on May 23rd**
 
@@ -158,7 +158,7 @@ comments that could be perceived as negative, and outside the scope of the
 code, will result in an immediate score of zero. Be constructive in your 
 feedback. Be kind. We are all learning.
 
-### Final product 
+### Final product
 
 **70 points: Due by midnight on June 6th**
 

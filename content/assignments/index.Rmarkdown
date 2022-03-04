@@ -26,7 +26,7 @@ labs <- tibble(
   Lab = 1:3,
   `Date Assigned` = mdy(c("4/4/22", "4/11/22", "5/9/22")),
   `Date Due` = mdy(c("4/11/22", "4/18/22", "5/16/22")),
-  Topic = c("Subsetting lists and base R `for()` loops",
+  Topic = c("[Subsetting lists and base R `for()` loops](../lab-1)",
             "Multiple models and API calls with **{purrr}**",
             "Create and apply functions")
 ) %>% 
