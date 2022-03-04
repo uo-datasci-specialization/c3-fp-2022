@@ -211,7 +211,9 @@ class: middle
 ### 15%
 ### 3 @ 10 points each
 
-Two labs on iteration and one on functions
+Two labs on iteration and one on functions.
+
+If possible - please try to be in-class on Lab days. I understand this is not always possible, but it helps me help you.
 
 ```{r echo = FALSE, message = FALSE}
 library(tidyverse)
