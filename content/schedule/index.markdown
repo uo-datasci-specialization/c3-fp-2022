@@ -42,7 +42,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-even "04-04" >}}
   {{< description "Intro to iterations & Lab 1" "This lecture will focus on base R methods for looping, specifically with `for` loops and the `*apply` family of loops. Our first lab will ask you to extract elements from deeply nested lists while also using base R loops to conduct basic operations." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w2" >}}
 {{< /wrap >}}
   {{< wrap >}}
 {{< assigned "lab-1" "Lab 1" >}}
