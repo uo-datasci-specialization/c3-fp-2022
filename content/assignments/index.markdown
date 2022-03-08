@@ -30,7 +30,7 @@ will be mostly multiple-choice and/or fill-in the blank, but there may be one
 or two free-response questions asking you to rewrite code and/or identify bugs
 in some provided code. 
 
-The quiz must be completed independently and is posted [here](https://canvas.uoregon.edu/courses/200937/quizzes/255531).
+The quiz must be completed independently and is posted [here](https://canvas.uoregon.edu/courses/200937/quizzes/255531). It will only be available to take, however, during the window in class. If you need to be absent during this time, please just let me know and I'll arrange for you to take it another time.
 
 ### Take-home
 
