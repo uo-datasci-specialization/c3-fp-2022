@@ -65,7 +65,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-odd "04-11" >}}
   {{< description "Iterations 2 & Lab 2" "Our second lecture on iteration will introduce [**{purrr}**](https://purrr.tidyverse.org) and contrast these functions with the base R versions. The concept of functional programming will also be discussed more explicitly. The second lab will get us using [**{purrr}**](https://purrr.tidyverse.org) in an applied way. We'll fit multiple models, iterate through nested lists, and make some real-world API calls." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w3" >}}
 {{< /wrap >}}
   {{< wrap >}}
 {{< assigned "lab-2" "Lab 2" >}}
