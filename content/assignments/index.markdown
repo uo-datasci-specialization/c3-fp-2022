@@ -14,11 +14,11 @@ Each lab is worth 10 points and is scored on a best-honest-effort basis. Please 
 
 {{< bootstrap-table "table table-hover" >}}
 
-| Lab|Date Assigned |Date Due      |Topic                                                 |
-|---:|:-------------|:-------------|:-----------------------------------------------------|
-|   1|Mon, April 04 |Mon, April 11 |[Subsetting lists and base R `for()` loops](../lab-1) |
-|   2|Mon, April 11 |Mon, April 18 |Multiple models and API calls with **{purrr}**        |
-|   3|Mon, May 09   |Mon, May 16   |Create and apply functions                            |
+| Lab|Date Assigned |Date Due      |Topic                                                      |
+|---:|:-------------|:-------------|:----------------------------------------------------------|
+|   1|Mon, April 04 |Mon, April 11 |[Subsetting lists and base R `for()` loops](../lab-1)      |
+|   2|Mon, April 11 |Mon, April 18 |[Multiple models and API calls with **{purrr}](../lab-2)** |
+|   3|Mon, May 09   |Mon, May 16   |Create and apply functions                                 |
 
 {{< /bootstrap-table >}}
 
@@ -30,7 +30,7 @@ will be mostly multiple-choice and/or fill-in the blank, but there may be one
 or two free-response questions asking you to rewrite code and/or identify bugs
 in some provided code. 
 
-The quiz must be completed independently.
+The quiz must be completed independently and is posted [here](https://canvas.uoregon.edu/courses/200937/quizzes/255531).
 
 ### Take-home
 

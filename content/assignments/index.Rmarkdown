@@ -27,7 +27,7 @@ labs <- tibble(
   `Date Assigned` = mdy(c("4/4/22", "4/11/22", "5/9/22")),
   `Date Due` = mdy(c("4/11/22", "4/18/22", "5/16/22")),
   Topic = c("[Subsetting lists and base R `for()` loops](../lab-1)",
-            "Multiple models and API calls with **{purrr}**",
+            "[Multiple models and API calls with **{purrr}](../lab-2)**",
             "Create and apply functions")
 ) %>% 
   mutate(across(where(is.Date), ~format(.x, "%a, %B %d")))
@@ -45,7 +45,7 @@ will be mostly multiple-choice and/or fill-in the blank, but there may be one
 or two free-response questions asking you to rewrite code and/or identify bugs
 in some provided code. 
 
-The quiz must be completed independently.
+The quiz must be completed independently and is posted [here](https://canvas.uoregon.edu/courses/200937/quizzes/255531).
 
 ### Take-home
 
