@@ -463,6 +463,17 @@ definitely note them
 |            |                   | F  | (139 pts or less) | 0.699 |
 
 ---
+# A note on feedback
+
+* Last term, I gave you feedback on everything you submitted
+
+* This term, I will give you feedback on the midterm and the final only
+
+* Labs scored on a completion basis
+
+* We will go over everything in class
+
+---
 class: inverse
 background-image:url(https://d194ip2226q57d.cloudfront.net/original_images/10_Tips_for_Workplace_Communication)
 background-size:contain
