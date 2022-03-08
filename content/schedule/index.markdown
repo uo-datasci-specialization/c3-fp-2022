@@ -88,7 +88,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-even "04-18" >}}
   {{< description "Batch load data & list columns" "We will introduce `purrr::map_df()` and discuss how it can be used for batch loading data in combination with some functions from the [**{fs}**](https://fs.r-lib.org) package. This will include parsing data (as columns) from the file names. The concept of list columns will be introduced and contrasted with `base::split()`. By the end of this lecture you should be able to fluently nest and unnest data frames and understand why this is such a powerful framework. The last 20 minutes will be devoted to an \\"in-class\\" quiz." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w4" >}}
 {{< /wrap >}}
   {{< wrap >}}
 {{< assigned "take-home-midterm" "Midterm" >}}

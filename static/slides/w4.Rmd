@@ -1,0 +1,1330 @@
+---
+title: "Batch loading data and list columns"
+author: "Daniel Anderson "
+date: "Week 4"
+output:
+  xaringan::moon_reader:
+    css: ["default", "new.css"]
+    lib_dir: libs
+    nature:
+      navigation:
+        scroll: false
+      highlightLines: true
+      countIncrementalSlides: false
+      beforeInit: "https://platform.twitter.com/widgets.js"
+    includes:
+      in_header: "load-feather.html"
+---
+
+```{r include = FALSE, results = "asis"}
+source(here::here("static", "slides", "slide-setup.R"))
+xaringanExtra::use_clipboard()
+knitr::opts_chunk$set(fig.width = 13, 
+                      message = FALSE, 
+                      warning = FALSE)
+
+library(tidyverse)
+theme_set(theme_minimal(22))
+```
+
+`r setup("w4")`
+
+---
+# Agenda
+* Discuss the midterm
+
+	+ Canvas quiz (10 points; please don't stress)
+
+	+ Take home (40 points)
+
+* Review Lab 2
+
+* `map_dfr` and batch-loading data
+
+---
+* Introduce list columns
+
+* Contrast: 
+  + `group_by() %>% nest() %>% mutate() %>% map()` with 
+  + `nest_by() %>% summarize()`
+
+* In-class midterm (last 25 minutes)
+
+---
+class: inverse-red middle
+# Review Lab 2
+
+---
+# Learning objectives
+
+* Understand when `map_dfr` can and should be applied
+
+* Better understand file paths, and how `{fs}` can help
+
+* Be able to batch load data of a specific type within a mixed-type directory
+
+* Use filenames to pull data
+
+---
+# Learning objectives (cont.)
+
+* Understand list columns and how they relate to `base::split`
+
+* Fluently nest/unnest data frames
+
+* Understand why `tidyr::nest` can be a powerful framework (data frames) and
+when `tidyr::unnest` can/should be used to move out of nested data frames and
+into a standard data frame.
+
+
+---
+class: inverse-blue center middle
+# Midterm
+### Questions?
+### Let's look at the [take-home portion](https://fp-2022.netlify.app/take-home-midterm/)
+
+---
+# `map_dfr`
+* If each iteration returns a data frame, you can use `map_dfr` to automatically bind all the data frames together.
+
+---
+# Example
+* Create a function that simulates data (please copy the code and follow along)
+
+```{r simulate}
+set.seed(8675309)
+simulate <- function(n, mean = 0, sd = 1) {
+	tibble(sample_id = seq_len(n),
+	       sample = rnorm(n, mean, sd))
+}
+simulate(10)
+```
+
+---
+# Two more quick examples
+```{r simulate2}
+simulate(3, 100, 10)
+
+simulate(5, -10, 1.5)
+```
+
+---
+# Simulation
+* Assume we want to vary the sample size from 10 to 150 by increments of 5
+* `mean` stays constant at 100, `sd` is constant at 10
+
+
+--
+### Try with `purrr::map`
+
+`r countdown::countdown(2)`
+
+---
+```{r simulate-map}
+library(tidyverse)
+sims <- map(seq(10, 150, 5), simulate, mean = 100, sd = 10)
+```
+
+.pull-left[
+```{r simulate-map1}
+sims[1]
+```
+]
+
+.pull-right[
+```{r simulate-map2}
+sims[2]
+```
+]
+
+---
+# Swap for `map_dfr`
+### Try it - what happens?
+
+`r countdown::countdown(1)`
+
+--
+```{r simulate-map_df}
+sims_df <- map_dfr(seq(10, 150, 5), simulate, 100, 10)
+sims_df
+```
+
+---
+# Notice a problem here
+
+```{r simulate-no-id}
+sims_df[1:15, ]
+```
+
+---
+# `.id` argument
+
+```{r add-id-iteration}
+sims_df2 <- map_dfr(seq(10, 150, 5), simulate, 100, 10, 
+                   .id = "iteration")
+sims_df2[1:15, ]
+```
+
+---
+class: middle inverse-orange
+
+> `.id`: Either a string or NULL. If a string, the output will contain a
+variable with that name, storing either the name (if .x is named) or the index (if .x is unnamed) of the input. If NULL, the default, no variable will be created.
+
+\- [{purrr} documentation](https://purrr.tidyverse.org/reference/map.html)
+
+---
+# setNames
+
+```{r setNames}
+sample_size <- seq(10, 150, 5)
+sample_size
+sample_size <- setNames(sample_size, 
+                        english::english(seq(10, 150, 5))) 
+sample_size[1:15]
+```
+
+---
+# Try again
+
+```{r add-id-sample_size}
+sims_df3 <- map_dfr(sample_size, simulate, 100, 10, 
+                   .id = "n")
+sims_df3[1:15, ]
+```
+
+---
+# Another quick example
+### `broom::tidy`
+
+* The {broom} package helps us extract model output in a tidy format
+
+```{r tidy-model}
+lm(tvhours ~ age, gss_cat) %>%
+	broom::tidy()
+```
+
+---
+# Fit separate models by year
+### Again - probs not best statistically
+
+```{r by_year}
+split(gss_cat, gss_cat$year) %>%
+ map_dfr(
+   ~lm(tvhours ~ age, .x) %>%
+     broom::tidy()
+) 
+```
+
+---
+# .id
+In cases like the preceding, `.id` becomes invaluable
+
+```{r by_year_id}
+split(gss_cat, gss_cat$year) %>%
+ map_dfr(
+   ~lm(tvhours ~ age, .x) %>%
+     broom::tidy(),
+   .id = "year"
+) 
+```
+
+---
+class: inverse-green middle
+# Break
+
+`r countdown::countdown(5)`
+
+---
+class: inverse-blue middle
+# Batch-loading data
+### Please follow along
+
+---
+# {fs}
+### Could we apply `map_dfr` here?
+
+```{r fs1}
+# install.packages("fs")
+library(fs)
+dir_ls(here::here("data"))
+dir_ls(here::here("data", "pfiles_sim"))
+```
+
+
+---
+# Limit files
+* We really only want the `.csv`
+  + That happens to be the only thing that's in there but that's regularly not the case
+
+```{r fs2}
+dir_ls(here::here("data", "pfiles_sim"), glob = "*.csv")
+```
+
+
+---
+# Batch load
+* Loop through the directories and `import` or `read_csv`
+
+```{r batch_load1, message = FALSE}
+files <- dir_ls(
+  here::here("data", "pfiles_sim"), 
+  glob = "*.csv"
+)
+batch <- map_dfr(files, read_csv)
+batch
+```
+
+---
+# Problem
+* We've lost a lot of info - no way to identify which file is which
+
+### Try to fix it!
+
+`r countdown::countdown(2)`
+---
+# Add id
+
+```{r add-id-batch}
+batch2 <- map_dfr(files, read_csv, .id = "file")
+batch2
+```
+
+Note - the `file` column contains the full path, which is so long it makes no rows print
+
+---
+
+```{r count-file}
+batch2 %>%
+	count(file) 
+```
+
+* Still not terrifically useful. What can we do?
+
+---
+# Step 1
+
+* Remove the `here::here` path from string
+
+```{r remove-here}
+batch2 <- batch2 %>%
+	mutate(
+	  file = str_replace_all(
+	    file, 
+	    here::here("data", "pfiles_sim"), 
+	    ""
+	  )
+	)
+
+batch2 %>% 
+  count(file)
+```
+
+---
+# Pull out pieces you need
+
+* Regular expressions are most powerful here
+
+	+ We haven't talked about them much
+
+* Try [RegExplain](https://www.garrickadenbuie.com/project/regexplain/)
+
+---
+# Pull grade
+
+* Note - I'm not expecting you to just suddenly be able to do this. This is more
+for illustration. There's also other ways you could extract the same info
+
+```{r pull-grade}
+batch2 %>%
+	mutate(
+	  grade = str_replace_all(
+	    file, 
+	    "/g(\\d?\\d).+", 
+	    "\\1"
+    )
+  ) %>%
+	select(file, grade)
+```
+
+---
+# `parse_number`
+
+* In this case `parse_number` also works - but note that it would not work to
+extract the year
+
+```{r grade-parse_number}
+batch2 %>%
+	  mutate(grade = parse_number(file)) %>% #<<
+  select(file, grade)
+```
+
+---
+# Extract year
+
+```{r parse_year}
+batch2 %>%
+	mutate(
+	  grade = str_replace_all(
+	    file, "/g(\\d?\\d).+", "\\1"
+    ),
+	  year = str_replace_all( #<<
+	    file, ".+files(\\d\\d)_sim.+", "\\1" #<<
+    ) #<<
+  ) %>% 
+	select(file, grade, year)
+```
+
+---
+# Extract Content Area
+
+```{r content}
+batch2 %>%
+	mutate(grade = str_replace_all(file, 
+	                               "/g(\\d?\\d).+", 
+	                               "\\1"),
+	       year = str_replace_all(file, 
+	                              ".+files(\\d\\d)_sim.+", 
+	                              "\\1"),
+	       content = str_replace_all(file, #<<
+	                                 "/g\\d?\\d(.+)pfiles.+", #<<
+	                                 "\\1")) %>% #<<
+	select(file, grade, year, content)
+```
+
+---
+# Double checks: grade
+
+```{r grade-double-check}
+batch2 %>%
+	mutate(grade = str_replace_all(file, 
+	                               "/g(\\d?\\d).+", 
+	                               "\\1"),
+	       year = str_replace_all(file, 
+	                              ".+files(\\d\\d)_sim.+", 
+	                              "\\1"),
+	       content = str_replace_all(file, 
+	                                 "/g\\d?\\d(.+)pfiles.+", 
+	                                 "\\1")) %>%
+	select(file, grade, year, content) %>%
+	count(grade)
+```
+
+---
+# Double checks: year
+
+```{r year-double-check}
+batch2 %>%
+	mutate(grade = str_replace_all(file, 
+	                               "/g(\\d?\\d).+", 
+	                               "\\1"),
+	       year = str_replace_all(file, 
+	                              ".+files(\\d\\d)_sim.+", 
+	                              "\\1"),
+	       content = str_replace_all(file, 
+	                                 "/g\\d?\\d(.+)pfiles.+", 
+	                                 "\\1")) %>%
+	select(file, grade, year, content) %>%
+	count(year)
+```
+
+---
+# Double checks: content
+
+```{r content-double-check}
+batch2 %>%
+	mutate(grade = str_replace_all(file, 
+	                               "/g(\\d?\\d).+", 
+	                               "\\1"),
+	       year = str_replace_all(file, 
+	                              ".+files(\\d\\d)_sim.+", 
+	                              "\\1"),
+	       content = str_replace_all(file, 
+	                                 "/g\\d?\\d(.+)pfiles.+", 
+	                                 "\\1")) %>%
+	select(file, grade, year, content) %>%
+	count(content)
+```
+
+---
+# Finalize
+
+```{r finalize-batch2}
+d <- batch2 %>%
+	mutate(
+	  grade = str_replace_all(
+	    file, "/g(\\d?\\d).+", "\\1"
+    ),
+	  grade = as.integer(grade),
+	  year = str_replace_all(
+	    file, ".+files(\\d\\d)_sim.+", "\\1"
+    ),
+	  year = as.integer(grade),
+	  content = str_replace_all(
+	    file, "/g\\d?\\d(.+)pfiles.+", "\\1"
+    )
+  ) %>%
+	select(-file) %>%
+	select(
+	  ssid, grade, year, content, testeventid, 
+	  asmtprmrydsbltycd, asmtscndrydsbltycd, Entry:WMLE
+  )
+```
+
+---
+# Final product
+* In this case, we basically have a tidy data frame already! 
+
+* We've reduced our problem from 31 files to a single file
+
+```{r print-final}
+d
+```
+
+---
+# Quick look at distributions
+```{r fig, echo = FALSE, fig.height = 8.5}
+library(ggridges)
+ggplot(d, aes(x = Theta, y = factor(grade))) +
+	geom_density_ridges(fill = "cornflowerblue", 
+	                    alpha = 0.8, 
+	                    bandwidth = 0.3) +
+	facet_wrap(~content)
+```
+
+
+---
+# Summary stats
+
+```{r summary-stats}
+d %>%
+	group_by(grade, content, asmtprmrydsbltycd) %>%
+	summarize(mean = mean(Theta)) %>%
+	pivot_wider(names_from = content, 
+	            values_from = mean)
+```
+
+---
+# Backing up a bit
+
+* What if we wanted only math files?
+
+```{r math}
+dir_ls(here::here("data", "pfiles_sim"), regexp = "Math")
+```
+
+---
+# Only Grade 5
+### You try
+
+`r countdown::countdown(3)`
+
+--
+```{r g5}
+g5_paths <- dir_ls(
+  here::here("data", "pfiles_sim"), 
+  regexp = "g5" #<<
+)
+```
+
+---
+# The rest is the same
+
+```{r }
+g5 <- map_dfr(g5_paths, read_csv, .id = "file") %>%
+  mutate(
+	  file = str_replace_all(
+	    file, 
+	    here::here("data", "pfiles_sim"), 
+	    ""
+	  )
+	)
+g5
+```
+
+
+---
+# Base equivalents
+
+```{r list.files1}
+list.files(here::here("data", "pfiles_sim"))
+```
+
+---
+# Full path
+
+```{r list.files2}
+list.files(here::here("data", "pfiles_sim"), full.names = TRUE)
+```
+
+---
+# Only csvs
+
+```{r list.files-csvs}
+list.files(here::here("data", "pfiles_sim"), 
+           full.names = TRUE,
+           pattern = "*.csv")
+
+```
+
+---
+# Why not use base?
+* We could, but `{fs}` plays a little nicer with `{purrr}`
+
+--
+```{r list.files-id-fail, error = TRUE}
+files <- list.files(
+  here::here("data", "pfiles_sim"), 
+  pattern = "*.csv"
+)
+batch3 <- map_dfr(files, read_csv, .id = "file")
+```
+
+--
+* Need to return full names
+
+```{r files-not-full-names}
+files
+```
+
+---
+# Try again
+
+```{r list.files-id-success, message = FALSE}
+files <- list.files(here::here("data", "pfiles_sim"), 
+                    pattern = "*.csv", 
+                    full.names = TRUE)
+batch3 <- map_dfr(files, read_csv, .id = "file")
+batch3
+```
+
+---
+# indexes
+* The prior example gave us indexes, rather than the file path. Why?
+
+
+--
+### No names
+```{r vector-names}
+names(files)
+```
+
+* We **need** the file path! An index isn't nearly as useful.
+
+---
+# Base method that works
+
+```{r }
+files <- list.files(here::here("data", "pfiles_sim"), 
+                    pattern = "*.csv", 
+                    full.names = TRUE) 
+files <- setNames(files, files)
+
+batch4 <- map_dfr(files, read_csv, .id = "file")
+batch4
+```
+
+---
+# My recommendation
+* If you're working interactively, no reason not to use `{fs}`
+
+* If you are building **functions** that take paths, might be worth
+considering skipping the dependency
+
+
+--
+### Note
+I am **not** saying skip it, but rather that you should **consider**
+whether it is really needed or not.
+
+---
+class: inverse-blue center middle
+
+# List columns
+
+---
+# Comparing models
+Let's say we wanted to fit/compare a set of models for each content area
+
+1. `lm(Theta ~ asmtprmrydsbltycd)`
+
+1. `lm(Theta ~ asmtprmrydsbltycd + asmtscndrydsbltycd)`
+
+1. `lm(Theta ~ asmtprmrydsbltycd * asmtscndrydsbltycd)`
+
+---
+# Data pre-processing
+* The disability variables are stored as numbers, we need them as factors
+* We'll make the names easier in the process
+
+```{r disab-recode}
+d <- d %>%
+	mutate(primary = as.factor(asmtprmrydsbltycd),
+	       secondary = as.factor(asmtscndrydsbltycd))
+```
+
+If you're interested in what the specific codes refer to, see [here](https://www.newberg.k12.or.us/district/eligibility-codes-and-requirements).
+
+---
+# Split the data
+
+The base method we've been using...
+
+```{r split}
+splt_content <- split(d, d$content)
+str(splt_content)
+```
+
+---
+# We could use this method
+
+```{r fit-models-split}
+m1 <- map(
+  splt_content, 
+  ~lm(Theta ~ asmtprmrydsbltycd, data = .x)
+)
+
+m2 <- map(
+  splt_content, 
+  ~lm(Theta ~ asmtprmrydsbltycd + asmtscndrydsbltycd, 
+      data = .x)
+)
+
+m3 <- map(
+  splt_content, 
+  ~lm(Theta ~ asmtprmrydsbltycd * asmtscndrydsbltycd, 
+      data = .x)
+)
+```
+
+* Then conduct tests to see which model fit better, etc.
+
+
+---
+# Alternative
+* Create a data frame with a list column
+
+```{r list-column}
+by_content <- d %>%
+  group_by(content) %>% 
+  nest()
+by_content
+```
+
+---
+# What's going on here?
+
+```{r list-column-listed}
+str(by_content$data)
+```
+
+---
+# Explore a bit
+
+```{r map-data1}
+map_dbl(by_content$data, nrow)
+map_dbl(by_content$data, ncol)
+map_dbl(by_content$data, ~mean(.x$Theta))
+```
+
+---
+# It's a data frame!
+
+We can add these summaries if we want
+
+```{r n-by-content}
+by_content %>%
+	mutate(n = map_dbl(data, nrow))
+```
+
+---
+# `map_*`
+* Note on the previous example we used `map_dbl` and we got a vector in return. 
+
+* What would happen if we just used `map`?
+
+--
+
+```{r n-by-content-list}
+by_content %>%
+	mutate(n = map(data, nrow))
+```
+
+---
+# Let's fit a model!
+
+```{r list-column-model}
+by_content %>%
+	mutate(m1 = map(data, ~lm(Theta ~ primary, data = .x)))
+```
+
+---
+# Extract the coefficients
+
+```{r }
+by_content %>%
+  mutate(
+    m1 = map(data, ~lm(Theta ~ primary, data = .x)),
+    coefs = map(m1, coef)
+)
+```
+
+---
+# Challenge
+
+* Continue with the above, but output a data frame with three columns:
+`content`, `intercept`, and `TBI` (which is code 74). 
+
+* In other words, output the
+mean score for students who were coded as not having a disability (code 0),
+along with students coded as having TBI.
+
+`r countdown::countdown(4)`
+
+---
+
+```{r coefs}
+by_content %>%
+  mutate(
+    m1 = map(data, ~lm(Theta ~ primary, data = .x)),
+    coefs = map(m1, coef),
+    no_disab = map_dbl(coefs, 1),
+    tbi = no_disab + map_dbl(coefs, "primary74")
+  ) %>%
+  select(content, no_disab, tbi)
+```
+
+--
+Note - I wouldn't have neccesarily expected you to add `no_disab` to the TBI coefficient.
+
+---
+# Compare models
+* Back to our original task - fit all three models
+
+### You try first
+
+1. `lm(Theta ~ primary)`
+
+1. `lm(Theta ~ primary + secondary)`
+
+1. `lm(Theta ~ primary + secondary + primary:secondary)`
+
+`r countdown::countdown(4)`
+
+---
+# Model fits
+
+```{r three-mods}
+mods <- by_content %>%
+  mutate(
+    m1 = map(data, ~lm(Theta ~ primary, data = .x)),
+    m2 = map(data, ~lm(Theta ~ primary + secondary, data = .x)),
+    m3 = map(data, ~lm(Theta ~ primary * secondary, data = .x))
+)
+mods
+```
+
+---
+# Brief foray into parallel iterations
+The `stats::anova` function can compare the fit of two models
+
+--
+### Pop Quiz
+
+How would we extract just ELA model 1 and 2?
+
+--
+
+.pull-left[
+```{r ela-mods1}
+mods$m1[[1]]
+```
+]
+
+.pull-right[
+```{r ela-mods2}
+mods$m2[[1]]
+```
+]
+
+---
+# Which fits better?
+
+```{r anova}
+compare <- anova(mods$m1[[1]], mods$m2[[1]])
+compare
+```
+
+---
+# `map2`
+
+* Works the same as `map` but iterates over two vectors concurrently
+
+* Let's compare model 1 and 2
+
+--
+```{r mod_compare1}
+mods %>%
+  mutate(comp12 = map2(m1, m2, anova))
+```
+
+--
+Perhaps not terrifically helpful
+
+
+---
+# Back to our `anova` object
+* Can we pull out  useful things?
+
+```{r str-comp}
+str(compare)
+```
+
+--
+Try pulling out the $p$ value
+
+---
+# Extract $p$ value
+* *Note - I'd recommend looking at more than just a p-value, but I do think this
+is useful for a quick glance*
+
+```{r extract-p1}
+compare$`Pr(>F)`
+compare[["Pr(>F)"]]
+```
+
+--
+
+```{r extract-p2}
+compare$`Pr(>F)`[2]
+compare[["Pr(>F)"]][2]
+```
+
+---
+# All p-values
+
+*Note - this is probably the most compact syntax, but that doesn't mean it's the
+most clear*
+
+```{r pull-pvals12}
+mods %>%
+  mutate(comp12 = map2(m1, m2, anova),
+         p12 = map_dbl(comp12, list("Pr(>F)", 2)))
+```
+
+---
+# Slight alternative
+* Write a function that pulls the p-value from model comparison objects
+
+```{r fun-compare}
+extract_p <- function(anova_ob) {
+  anova_ob[["Pr(>F)"]][2]
+}
+```
+
+
+--
+* Loop this function through the anova objects
+
+---
+```{r pull-pvals12-fun}
+mods %>%
+  mutate(comp12 = map2(m1, m2, anova),
+         p12 = map_dbl(comp12, extract_p))
+```
+
+
+---
+# Brief sidetrack
+We can also create the function using `purrr::compose()`.
+
+
+--
+### Example
+Create a centering function (which subtracts the mean from each ob)
+
+```{r }
+center <- compose(~.x - mean(.x, na.rm = TRUE))
+```
+
+Use `~` and `.x`, just like with the `map()` functions.
+
+---
+# Test it out
+
+```{r}
+library(palmerpenguins)
+
+penguins$bill_length_mm %>% 
+  head()
+
+penguins$bill_length_mm %>%
+  center() %>% 
+  head()
+
+penguins$bill_length_mm %>% 
+  center() %>%
+  mean(na.rm = TRUE) %>%
+  round()
+```
+
+---
+# Compose a p-val extractor
+
+```{r }
+p <- compose(~.x[["Pr(>F)"]][2])
+```
+
+### Use this instead
+```{r }
+mods %>%
+  mutate(
+    comp12 = map2(m1, m2, anova),
+    p12 = map_dbl(comp12, p)
+  )
+```
+
+---
+class: middle
+# Functions
+This was a quick intro - don't worry if it doesn't really make sense yet. We'll talk about them (a lot) more in the coming weeks.
+
+---
+class: inverse-red middle
+# An alternative
+## Conducting operations by row
+
+---
+# Operations by row
+The `dplyr::rowwise()` function fundamentally changes the way a `tibble()` behaves
+
+```{r }
+df <- tibble(name = c("Me", "You"), x = 1:2, y = 3:4, z = 5:6)
+```
+
+.pull-left[
+```{r }
+df %>% 
+  mutate(m = mean(c(x, y, z)))
+```
+]
+
+.pull-right[
+```{r }
+df %>% 
+  rowwise() %>% 
+  mutate(m = mean(c(x, y, z)))
+```
+]
+
+---
+# Add a group & summarize
+
+```{r }
+df %>% 
+  rowwise(name) %>% 
+  summarize(m = mean(c(x, y, z)))
+```
+
+---
+# List columns
+If you apply rowwise operation with a list column, you don't have to loop
+
+```{r }
+df <- tibble(var = list(1, 2:3, 4:6))
+```
+
+.pull-left[
+```{r }
+df %>% 
+  mutate(
+    lngth = map_int(var, length)
+  )
+```
+]
+
+.pull-right[
+```{r }
+df %>% 
+  rowwise() %>% 
+  mutate(lnght = length(var))
+```
+]
+
+---
+# Creating list columns
+You can use the `dplyr::nest_by()` function to create a list column for each group, *and* convert it to a rowwise data frame.
+
+--
+```{r }
+d %>% 
+  nest_by(content)
+```
+
+---
+# Challenge
+Given what we just learned, can you fit a model of the form `Theta ~ primary` to each content area (i.e., *not* using **{purrr}**)?
+
+`r countdown::countdown(2)`
+
+--
+Wrap it in `list()` (should suggest this in the error reporting if you don't)
+
+```{r }
+d %>% 
+  nest_by(content) %>% 
+  mutate(m1 = list(lm(Theta ~ primary, data = data)))
+```
+
+---
+# Challenge 2
+Can you extend it further and extract the coefficients with `coef`? What about creating a new column that has the intercept values?
+
+`r countdown::countdown(2)`
+
+--
+```{r }
+d %>% 
+  nest_by(content) %>% 
+  mutate(m1 = list(lm(Theta ~ primary, data = data)),
+         coefs = list(coef(m1)))
+```
+
+---
+# Return atomic vectors
+
+```{r }
+d %>% 
+  nest_by(content) %>% 
+  mutate(m1 = list(lm(Theta ~ primary, data = data)),
+         intercept = coef(m1)[1])
+```
+
+---
+# Fit all models
+
+The below gets us the same results we got before
+
+```{r }
+mods2 <- d %>%
+  nest_by(content) %>% 
+  mutate(
+    m1 = list(lm(Theta ~ primary, data = data)),
+    m2 = list(lm(Theta ~ primary + secondary, data = data)),
+    m3 = list(lm(Theta ~ primary * secondary, data = data))
+)
+mods2
+```
+
+---
+# Look at all $R^2$
+### It's a normal data frame!
+
+```{r gather-models}
+mods %>%
+  pivot_longer(
+    m1:m3,
+    names_to = "model",
+    values_to = "output"
+)
+```
+
+---
+# Extract all $R^2$
+
+*Note - might want to write a function here again*
+
+```{r extract-r2}
+r2 <- mods %>%
+  pivot_longer(
+    m1:m3,
+    names_to = "model",
+    values_to = "output"
+  ) %>% 
+  mutate(r2 = map_dbl(output, ~summary(.x)$r.squared))
+r2
+```
+
+---
+# Plot
+
+```{r model-plot, fig.height = 6.5}
+ggplot(r2, aes(model, r2)) +
+	geom_col(aes(fill = model)) +
+	facet_wrap(~content) +
+	guides(fill = "none") +
+	scale_fill_brewer(palette = "Set2")
+```
+
+---
+# Unnesting
+
+* Sometimes you just want to `unnest`
+
+--
+
+* Imagine we want to plot the coefficients by model... how?
+
+--
+* `broom::tidy()` => `tidyr::unnest()`
+
+
+
+---
+# Tidy
+
+```{r}
+mods %>%
+	pivot_longer(
+	  m1:m3,
+	  names_to = "model", 
+	  values_to = "output"
+  ) %>%
+	mutate(tidied = map(output, broom::tidy))
+```
+
+---
+# Equivalently
+
+```{r}
+mods %>%
+	pivot_longer(
+	  m1:m3,
+	  names_to = "model", 
+	  values_to = "output"
+  ) %>%
+  rowwise() %>% 
+  mutate(tidied = list(broom::tidy(output)))
+```
+
+---
+# Select and unnest
+
+```{r tidied}
+tidied <- mods %>%
+	gather(model, output, m1:m3) %>%
+	mutate(tidied = map(output, broom::tidy)) %>%
+	select(content, model, tidied) %>%
+	unnest(tidied)
+tidied
+```
+
+---
+# Plot
+### Lets look how the primary coefficients change
+
+```{r coef-plot-echo, eval = FALSE}
+to_plot <- names(coef(mods$m1[[1]]))
+
+tidied %>%
+  filter(term %in% to_plot) %>%
+  ggplot(aes(estimate, term, color = model)) +
+  geom_point() +
+  scale_color_brewer(palette = "Set2") +
+  facet_wrap(~content)
+```
+
+---
+```{r coef-plot-eval, echo = FALSE, fig.height = 11}
+to_plot <- names(coef(mods$m1[[1]]))
+
+tidied %>%
+	filter(term %in% to_plot) %>%
+  ggplot(aes(estimate, term, color = model)) +
+	geom_point() +
+	scale_color_brewer(palette = "Set2") +
+	facet_wrap(~content)
+```
+
+---
+# Last bit
+* We've kind of been running the wrong models this whole time
+
+* We forgot about grade!
+
+* No problem, just change the grouping factor
+
+---
+# By grade
+
+```{r by_grade}
+by_grade_content <- d %>%
+  group_by(content, grade) %>% 
+	nest()
+by_grade_content
+```
+
+---
+# Fit models
+
+```{r by_grade_mods}
+mods_grade <- by_grade_content %>%
+  mutate(
+    m1 = map(data, ~lm(Theta ~ primary, data = .x)),
+    m2 = map(data, ~lm(Theta ~ primary + secondary, 
+                       data = .x)),
+    m3 = map(data, ~lm(Theta ~ primary * secondary, 
+                       data = .x))
+)
+mods_grade
+```
+
+---
+# Look at $R^2$
+
+```{r by_grade_r2}
+mods_grade %>%
+	pivot_longer(
+    m1:m3, 
+    names_to = "model", 
+    values_to = "output"
+  ) %>% 
+	mutate(r2 = map_dbl(output, ~summary(.x)$r.squared))
+```
+
+---
+# Plot
+
+```{r by_grade_r2_plot-echo, eval = FALSE}
+mods_grade %>%
+  pivot_longer(
+    m1:m3, 
+    names_to = "model", 
+    values_to = "output"
+  ) %>% 
+  mutate(r2 = map_dbl(output, ~summary(.x)$r.squared)) %>%
+  ggplot(aes(model, r2)) +
+  geom_col(aes(fill = model)) +
+  facet_grid(grade ~ content) +
+  guides(fill = "none") +
+  scale_fill_brewer(palette = "Set2")
+```
+
+---
+```{r by_grade_r2_plot-eval, echo = FALSE, fig.height = 11.5}
+mods_grade %>%
+  pivot_longer(m1:m3, names_to = "model", values_to = "output") %>% 
+  mutate(r2 = map_dbl(output, ~summary(.x)$r.squared)) %>%
+  ggplot(aes(model, r2)) +
+  geom_col(aes(fill = model)) +
+  facet_grid(grade ~ content) +
+  guides(fill = "none") +
+  scale_fill_brewer(palette = "Set2")
+```
+
+---
+# Summary
+* List columns are really powerful and really flexible
+
+* Also help you stay organized
+
+* You can approach the problem either with **{purrr}** or `dplyr::rowwise()`. 
+
+  + **Important**: If you use `rowwise()`, remember to `ungroup()` when you want it to go back to being a normal data frame
+  
+  + I'm asking you to learn both - the row-wise approach might be a bit easier but is a little less general (only works with data frames)
+
+---
+class: inverse-green middle
+# In-class Midterm
+### Next time: Parallel iterations
