@@ -118,6 +118,17 @@ a:focus {
   color: #22ABF6;
 }
 
+.inverse-white {
+	background-color: #fff;
+	color: #fff;
+	text-shadow: none;
+}
+
+.inverse-white h1 {
+	color: #21252A;
+	font-size: 7rem;
+}
+
 .inverse-blue {
 	background-color: #22ABF6;
 	color: #fff;
