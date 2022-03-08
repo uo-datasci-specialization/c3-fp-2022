@@ -1,4 +1,3 @@
-xaringanExtra::use_clipboard()
 setup <- function(slides) {
   paste0(
   'layout: true

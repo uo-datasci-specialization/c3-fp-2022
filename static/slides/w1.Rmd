@@ -19,6 +19,7 @@ output:
 
 ```{r include = FALSE, results = "asis"}
 source(here::here("static", "slides", "slide-setup.R"))
+xaringanExtra::use_clipboard()
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
