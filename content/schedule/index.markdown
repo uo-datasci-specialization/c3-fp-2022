@@ -114,7 +114,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-odd "04-25" >}}
   {{< description "Parallel iterations & looping variants" "We will introduce parallel iterations (`purrr::map2()` and `purrr::pmap()`) and apply them within the context of list columns. We'll discuss the differences betweeen`purrr::map()` and `purrr::modify()` while introducing new functions, including `purrr::safely()`, and `purrr::walk()`. We will also discuss different types of loops, focusing mostly on `purrr::reduce()` (and noting the similarities with `base::Reduce()`)." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w5" >}}
 {{< /wrap >}}
   {{< wrap >}}
 
