@@ -1561,4 +1561,4 @@ head(percentile_df(rnorm(50)))
 ---
 class: inverse-green middle
 # Next time
-### Lab 3
+### More functions and Lab 3
