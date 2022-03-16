@@ -137,7 +137,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-even "05-02" >}}
   {{< description "Writing functions 1 & 2" "The first part of this lecture will focus on the very basics of functions - understanding that everything in R is a function, the components of a function, when to write a function, and how to go about it (e.g., development and informal testing). We will then extend this discussion toward making the internals of a function more complicated, while still keeping functions as simple as possible. Functions within functions!" >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w6" >}}
 {{< /wrap >}}
   {{< wrap >}}
 
