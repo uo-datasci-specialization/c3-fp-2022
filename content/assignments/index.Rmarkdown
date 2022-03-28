@@ -28,7 +28,7 @@ labs <- tibble(
   `Date Due` = mdy(c("4/11/22", "4/18/22", "5/16/22")),
   Topic = c("[Subsetting lists and base R `for()` loops](../lab-1)",
             "[Multiple models and API calls with **{purrr}](../lab-2)**",
-            "Create and apply functions")
+            "[Create and apply functions](../lab-3)")
 ) %>% 
   mutate(across(where(is.Date), ~format(.x, "%a, %B %d")))
 
