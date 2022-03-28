@@ -14,7 +14,7 @@ Below are the meeting times for our class
 -   **Classroom:** Lokey Education, 115
 -   **Instructor:** Daniel Anderson, PhD
     -   *email:* (preferred contact method) <daniela@uoregon.edu>
-    -   *office hours*: By appointment
+    -   *office hours*: Fridays 2-5 PM. Please email to setup a time and a zoom link.
     -   *pronouns:* he/him/his
 
 </div>
