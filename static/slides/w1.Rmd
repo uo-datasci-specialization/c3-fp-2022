@@ -474,6 +474,12 @@ definitely note them
 * We will go over everything in class
 
 ---
+class: middle
+# Week 6
+## Fully remote
+I will be traveling and plan to teach from my hotel room.
+
+---
 class: inverse
 background-image:url(https://d194ip2226q57d.cloudfront.net/original_images/10_Tips_for_Workplace_Communication)
 background-size:contain
