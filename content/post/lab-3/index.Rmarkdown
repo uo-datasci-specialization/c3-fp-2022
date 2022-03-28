@@ -1,7 +1,7 @@
 ---
 title: Lab 3
 author: Daniel Anderson
-date: '2022-05-03'
+date: '2022-03-05'
 assigned: '2022-05-09'
 due: '2022-05-16'
 slug: lab-3

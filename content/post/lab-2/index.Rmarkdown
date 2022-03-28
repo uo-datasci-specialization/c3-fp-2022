@@ -1,7 +1,7 @@
 ---
 title: Lab 2
 author: Daniel Anderson
-date: '2021-03-08'
+date: '2022-03-04'
 assigned: '2022-04-11'
 due: '2022-04-18'
 slug: lab-2
