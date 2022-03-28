@@ -161,7 +161,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-odd "05-09" >}}
   {{< description "Writing functions 3 & Lab 3" "Our final lecture on functions, we will discuss what makes a function \\"good\\" and what makes them fragile. In this spirit, we will create many small functions that build toward a single function. Additionally, we will discuss the concept of **non-standard evaluation**, which is used prevalently throughout the tidyverse and can make programming with the tidyverse a bit more difficult. We will also have our final lab for the class, which will ask you to create and apply functions." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w7" >}}
 {{< /wrap >}}
   {{< wrap >}}
 {{< assigned "lab-3" "Lab 3" >}}
