@@ -31,7 +31,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< readings "adv-r" "control-flow.html#loops" "5.3" >}}
 {{< /wrap >}}
   {{< wrap >}}
-{{< lecture "" >}}
+{{< lecture "https://youtu.be/owhV5SNC92Y" >}}
 {{< /wrap >}}
 {{< /week-odd >}}
 
