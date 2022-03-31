@@ -184,9 +184,9 @@ Each of the below links to the full book. Icons in the schedule link to specific
  {{< schedule >}}
 
 {{< week-even "05-16" >}}
-  {{< description "Shiny 1 & 2" "We will start by introducing the very basics of shiny - the user interface (UI) and the server. We will work together to create a basic shiny application, modifying the default template to use ggplot2. Shiny dashboards and different layout options will also be discussed." >}}
+  {{< description "Shiny 1 & 2" "Please clone [the course repo of example apps](https://github.com/datalorax/shiny-app-examples) before class.We will start by introducing the very basics of shiny - the user interface (UI) and the server. We will work together to create a basic shiny application, modifying the default template to use ggplot2. Shiny dashboards and different layout options will also be discussed." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w8" >}}
 {{< /wrap >}}
   {{< wrap >}}
 {{< assigned "assignments/#peer-review" "PR" >}}
@@ -212,7 +212,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< week-odd "05-23" >}}
   {{< description "Shiny 3 & review" "Our final lecture on shiny will focus on workflows and organization. We will discuss writing functions to help with organization. Additionally, shiny applications are somewhat notorious for being slow. If time allows, we will also discuss methods to profile your code and identify bottlenecks. This is a built-in day for review and to make sure we have covered the primary topics of shiny. We will also review the basics of functions. Students will be allowed to request topics for review before class." >}}
   {{< wrap >}}
-{{< slides "" >}}
+{{< slides "w9" >}}
 {{< /wrap >}}
   {{< wrap >}}
 
