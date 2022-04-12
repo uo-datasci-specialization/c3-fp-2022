@@ -77,7 +77,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< readings "r4ds" "many-models.html" "25" >}}
 {{< /wrap >}}
   {{< wrap >}}
-{{< lecture "" >}}
+{{< lecture "https://youtu.be/lUYc5ecxT5U" >}}
 {{< /wrap >}}
 {{< /week-odd >}}
 
