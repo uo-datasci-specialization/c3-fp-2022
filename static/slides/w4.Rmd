@@ -48,7 +48,7 @@ theme_set(theme_minimal(22))
   + `group_by() %>% nest() %>% mutate() %>% map()` with 
   + `nest_by() %>% summarize()`
 
-* In-class midterm (last 25 minutes)
+* In-class midterm (last 30 minutes)
 
 ---
 class: inverse-red middle
