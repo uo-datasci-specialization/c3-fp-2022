@@ -729,7 +729,7 @@ the plots themselves
 
 
 --
-We can do this with the `map()` family, but instead we'll use a different function, which we'll talk about more next week.
+We can do this with the `map()` family, but instead we'll use a different function, which we'll talk about more momentarily.
 
 
 --
@@ -1037,7 +1037,7 @@ safe_models$safe_mod[[4]]
 
 ---
 # Inspecting
-I often use `safely()` to help me de-bug. Why is it failing *there (but note the new error messages help with this too).
+I often use `safely()` to help me de-bug. Why is it failing *there* (but note the new error messages help with this too).
 
 
 --
@@ -1174,6 +1174,13 @@ reduce(l, sum)
 ```
 
 ---
+# Compare to `map()`
+
+```{r }
+map(l, sum)
+```
+
+---
 # What's going on?
 The code `reduce(l, sum)` is the same as
 
@@ -1279,6 +1286,6 @@ If we have any time left - let's work on the homework
 
 ---
 class: inverse-green middle
-# Next time
+# Next time (fully remote)
 ## Functions
 Beginning next class, the focus of the course will shift
