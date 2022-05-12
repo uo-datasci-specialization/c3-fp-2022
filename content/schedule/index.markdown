@@ -175,7 +175,7 @@ Each of the below links to the full book. Icons in the schedule link to specific
 {{< readings "other" "https://shiny.rstudio.com/articles/build.html" "6.5-6.8" >}}
 {{< /wrap >}}
   {{< wrap >}}
-{{< lecture "" >}}
+{{< lecture "https://youtu.be/QnvD_I4LLPg" >}}
 {{< /wrap >}}
 {{< /week-odd >}}
 
